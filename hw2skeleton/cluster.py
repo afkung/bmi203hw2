@@ -1,5 +1,6 @@
 from .utils import Atom, Residue, ActiveSite
 import numpy as np
+import copy
 
 def findCentroid(points):
     """
@@ -70,9 +71,12 @@ def cluster_by_partitioning(active_sites,k):
         clusters = [[]]*k
         # cluster points based on centroids
         clusters = kmeansCluster(active_sites, centroids,k)
+        old_centroids = copy.deepcopy(centroids)
         # find new centroids
         for index in range(k):
             centroids[index] = findCentroid(clusters[index])
+        if centroids == old_centroids:
+        	return clusters
     print("Sum of distances:"+str(sum_distances(clusters)))
     return clusters
 
