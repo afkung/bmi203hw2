@@ -67,6 +67,22 @@ def read_active_site(filepath):
             else:  # I've reached a TER card
                 active_site.residues.append(residue)
 
+	# creating 3D vector representing each active site
+	# vector coordinate 1: length of active site (in residues)
+    active_site.vector[0] = len(active_site.residues)
+	# vector coordinate 2: fraction of polar residues * 100
+    polars = ['SER','THR','CYS','ASN','GLN','TYR']
+    polar_count = 0
+    for residue in active_site.residues:
+        if str(residue)[0:3] in polars:
+            polar_count += 1
+    active_site.vector[1] = polar_count / float(len(active_site.residues)) * 100
+    # vector coordinate 3: +50 if active site contains catalytic triad (Acid-Base-Nucleophile in order)
+    for index in range(len(active_site.residues)-3):
+    	if str(active_site.residues[index])[0:3] in ['SER','CYS','THR']:
+            if str(active_site.residues[index+1])[0:3] in ['HIS','LYS','SER']:
+                if str(active_site.residues[index+2])[0:3] in ['ASP','GLU','HIS']:
+                    active_site.vector[2] = 50
     return active_site
 
 

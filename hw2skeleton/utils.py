@@ -2,7 +2,7 @@
 
 class Atom:
     """
-    A simple class for an amino acid residue
+    A simple class for an atom
     """
 
     def __init__(self, type):
@@ -35,6 +35,7 @@ class ActiveSite:
     def __init__(self, name):
         self.name = name
         self.residues = []
+        self.vector = [0.0,0.0,0.0] #vector representing the properties of the active site
 
     # Overload the __repr__ operator to make printing simpler.
     def __repr__(self):
