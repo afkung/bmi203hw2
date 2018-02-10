@@ -9,7 +9,7 @@ def test_similarity():
     activesite_a = io.read_active_site(filename_a)
     activesite_b = io.read_active_site(filename_b)
 
-    assert cluster.findDistance(activesite_a.vector, activesite_b.vector) == 0.0
+    assert cluster.findDistance(activesite_a, activesite_b) == 0.0
 
 def test_partition_clustering():
     # tractable subset
@@ -20,7 +20,7 @@ def test_partition_clustering():
         filepath = os.path.join("data", "%i.pdb"%id)
         active_sites.append(io.read_active_site(filepath))
 
-    assert cluster.cluster_by_partitioning(active_sites,2) == [[276,276],[10701,10701]]
+    assert cluster.cluster_by_partitioning(active_sites,2) == [[10701,10701],[276,276]]
 
 def test_hierarchical_clustering():
     # tractable subset
@@ -31,4 +31,4 @@ def test_hierarchical_clustering():
         filepath = os.path.join("data", "%i.pdb"%id)
         active_sites.append(io.read_active_site(filepath))
 
-    assert cluster.cluster_hierarchically(active_sites,2) == [[276,276],[10701,10701]]
+    assert cluster.cluster_hierarchically(active_sites,2) == [[10701,10701],[276,276]]
