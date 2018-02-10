@@ -29,4 +29,4 @@ def test_hierarchical_clustering():
     for id in pdb_ids:
         filepath = os.path.join("data", "%i.pdb"%id)
         active_sites.append(io.read_active_site(filepath))
-    assert cluster_hierarchically(active_sites,2) == [[10701, 10701], [276, 276]] or [[276, 276], [10701, 10701]]
+    assert cluster.cluster_hierarchically(active_sites,2) == [[10701, 10701], [276, 276]] or [[276, 276], [10701, 10701]]
