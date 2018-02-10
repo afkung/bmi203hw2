@@ -9,7 +9,7 @@ def test_similarity():
     activesite_a = io.read_active_site(filename_a)
     activesite_b = io.read_active_site(filename_b)
 
-    assert cluster.compute_similarity(activesite_a, activesite_b) == 0.0
+    assert cluster.findDistance(activesite_a.vector, activesite_b.vector) == 0.0
 
 def test_partition_clustering():
     # tractable subset

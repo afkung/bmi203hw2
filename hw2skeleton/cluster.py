@@ -1,4 +1,5 @@
 from .utils import Atom, Residue, ActiveSite
+import numpy as np
 
 def findCentroid(points):
     """
@@ -45,7 +46,7 @@ def kmeansCluster(points, centroids, k):
             if distance < closest_distance:
                 closest_cluster = index
                 closest_distance = distance
-        kmeansclusters[closest_cluster] += [item]
+        kmeansclusters[closest_cluster] = kmeansclusters[closest_cluster] + [item]
     return kmeansclusters
 
 def cluster_by_partitioning(active_sites,k):
@@ -57,21 +58,22 @@ def cluster_by_partitioning(active_sites,k):
             (this is really a list of clusters, each of which is list of
             ActiveSite instances)
     """
+    # initialize centroids to k random active site vectors
     centroids = [[0.0,0.0,0.0]]*k
-    clusters = [[]]*k
-    # initialize centroids to k random vectors    
     centroid_indices = np.random.choice(len(active_sites),k,replace = False)
     for index in range(k):
         centroids[index] = active_sites[centroid_indices[index]].vector
+ 
     # run clustering for n iterations
     iterations = 100
     for iteration in range(iterations):
+        clusters = [[]]*k
         # cluster points based on centroids
         clusters = kmeansCluster(active_sites, centroids,k)
         # find new centroids
         for index in range(k):
             centroids[index] = findCentroid(clusters[index])
-        print(centroids)
+    print("Sum of distances:"+str(sum_distances(clusters)))
     return clusters
 
 def clusterNearest(points):
@@ -85,15 +87,15 @@ def clusterNearest(points):
     nearest_pt2 = 0
     for index1 in range(len(points)):
         for index2 in range(len(points)):
-            if findDistance(points[index1],points[index2]) < nearest_distance and index1 != index2:
+            if  findDistance(points[index1],points[index2]) < nearest_distance and index1 != index2:
                 nearest_distance = findDistance(points[index1],points[index2])
                 nearest_pt1 = index1
                 nearest_pt2 = index2
-    points[index1] += [points[index2]]
-    points.pop(index2)
+    points[nearest_pt1] += points[nearest_pt2]
+    points.pop(nearest_pt2)
     return points
 
-def cluster_hierarchically(active_sites):
+def cluster_hierarchically(active_sites, number):
     """
     Cluster the given set of ActiveSite instances using a hierarchical algorithm.                                                                  #
     Input: a list of ActiveSite instances
@@ -101,10 +103,12 @@ def cluster_hierarchically(active_sites):
             (each clustering is a list of lists of Sequence objects)
     """
     # iterate until desired number of clusters is reached
-    while len(local_clusters) > number:
-        local_clusters = clusterNearest(local_clusters)
-        print(len(local_clusters))
-    return local_clusters
+    for index in range(len(active_sites)):
+        active_sites[index] = [active_sites[index]]
+    while len(active_sites) > number:
+        active_sites = clusterNearest(active_sites)
+    print("Sum of distances:"+str(sum_distances(active_sites)))
+    return active_sites
     
 def sum_distances(clusters):
     """
@@ -116,5 +120,5 @@ def sum_distances(clusters):
     for cluster in clusters:
         centroid = findCentroid(cluster)
         for item in cluster:
-            total_sum += ((item[0]-centroid[0])**2 + (item[1]-centroid[1])**2 + (item[2]-centroid[2])**2)**0.5
+            total_sum += ((item.vector[0]-centroid[0])**2 + (item.vector[1]-centroid[1])**2 + (item.vector[2]-centroid[2])**2)**0.5
     return total_sum / len(clusters)
